@@ -1,0 +1,8 @@
+.CardContainer {
+  display: flex;
+  margin: 2rem auto;
+}
+
+.storyCard {
+  margin: 2rem;
+}
