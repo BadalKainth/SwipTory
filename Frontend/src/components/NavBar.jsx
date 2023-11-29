@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { Link } from 'react-router-dom'
 import Modal from 'react-modal'
 import classes from './NavBar.module.css'
 import { useAuth } from '../hooks/auth'
@@ -46,6 +47,17 @@ function NavBar() {
     setStoryModalIsOpen(false)
   }
 
+  // const links = [
+  //   {
+  //     name: 'Home',
+  //     to: '/',
+  //   },
+  //   {
+  //     name: 'Bookmarks',
+  //     to: '/bookmarks',
+  //   },
+  // ]
+
   return (
     <>
       <div className={classes.NavBar}>
@@ -54,7 +66,7 @@ function NavBar() {
           <div className={classes.loggedIn}>
             <div className={classes.buttonGroup}>
               <button className={`${classes.button} ${classes.bookmarkBtn}`}>
-                Bookmarks
+                <a href="bookmarks">Bookmarks</a>
               </button>
               <button
                 className={`${classes.button} ${classes.addStoryBtn}`}

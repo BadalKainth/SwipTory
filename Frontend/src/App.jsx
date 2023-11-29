@@ -3,6 +3,7 @@ import { Route, Routes } from 'react-router-dom'
 import Home from './components/Home'
 import { useEffect } from 'react'
 import { useAuth } from './hooks/auth'
+import Bookmarks from './Pages/Bookmarks'
 
 function App() {
   const { setUser } = useAuth()
@@ -17,10 +18,12 @@ function App() {
   }, [])
 
   return (
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/story/:id" element={<Home />} />
-    </Routes>
+    <>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/bookmarks" element={<Bookmarks />} />
+      </Routes>
+    </>
   )
 }
 

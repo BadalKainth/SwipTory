@@ -1,39 +1,49 @@
-import { useState } from 'react'
-import Countdown from 'react-countdown'
+import { useRef, forwardRef } from 'react'
+import './SlidesProgressBar.scoped.css'
+import { useEffect } from 'react'
 
-export default function SlidesProgressBar({ slidesCount = 1 }) {
-  const [slidesProgress, setSlidesProgress] = useState(0)
+const ProgessBar = forwardRef(function ProgessBar(_, ref) {
+  return (
+    <div className="outer">
+      <div className="inner" ref={ref}></div>
+    </div>
+  )
+})
+
+export default function SlidesProgressBar({
+  slidesCount = 3,
+  slideIndex = 0,
+  onSlideIndexChange,
+}) {
+  // const [slidesProgress, setSlidesProgress] = useState(0)
+
+  const eleRef = useRef([])
+
+  useEffect(() => {
+    async function updateProgress() {
+      setTimeout(() => {
+        if (slideIndex < slidesCount - 1) {
+          onSlideIndexChange(slideIndex + 1)
+        }
+      }, 4700)
+
+      for (let i = 0; i < slideIndex; i++) {
+        eleRef.current[i].style.animationDuration = '0s'
+        eleRef.current[i].style.animationPlayState = 'running'
+      }
+
+      eleRef.current[slideIndex].style.animationPlayState = 'running'
+    }
+    updateProgress()
+  }, [slidesCount, onSlideIndexChange, slideIndex])
 
   return (
-    <div
-      style={{
-        padding: '0.7rem 0.5rem 0rem 0.5rem',
-      }}
-    >
-      <div
-        style={{
-          width: '100%',
-          backgroundColor: '#D9D9D980',
-        }}
-      >
-        <Countdown
-          date={Date.now() + 5000}
-          intervalDelay={0}
-          precision={3}
-          renderer={({ seconds }) => {
-            return (
-              <div
-                style={{
-                  height: '8px',
-                  width: `${(100 / 5) * (5 - seconds)}%`,
-                  borderRadius: '8px',
-                  backgroundColor: 'white',
-                }}
-              ></div>
-            )
-          }}
-        />
-      </div>
+    <div className="container">
+      {Array(slidesCount)
+        .fill(0)
+        .map((_, i) => (
+          <ProgessBar key={i} ref={(el) => (eleRef.current[i] = el)} />
+        ))}
     </div>
   )
 }

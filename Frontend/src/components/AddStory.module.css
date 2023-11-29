@@ -28,12 +28,14 @@
 
 .AddStorySlide {
   width: 77px;
+  padding: 0.7rem;
   border-radius: 10px;
   font-weight: 700;
   font-size: 15px;
   background: transparent;
   box-shadow: 1px 1px 2px 2px rgb(223, 223, 223);
   border: none;
+  cursor: pointer;
 }
 
 .CloseFormButton {
@@ -113,4 +115,13 @@
 
 .PostStoryButton {
   background-color: #ff7373;
+}
+
+.DeleteSlideButton {
+  position: absolute;
+  top: -5px;
+  right: -12px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
 }

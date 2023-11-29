@@ -1,4 +1,3 @@
-import classes from './Home.module.css'
 import NavBar from './NavBar'
 import FList from './FilterList'
 import { filtersList } from '../utils/filters-list'
@@ -8,6 +7,7 @@ import { getStories } from '../api/stories'
 import StoryPreview from './StoryPreview'
 import { useCallback, useState } from 'react'
 import Modal from 'react-modal'
+import classes from './Home.module.css'
 
 const customStyles = {
   overlay: {
@@ -48,14 +48,56 @@ function Home() {
         }}
       >
         <FList filters={filtersList} />
-        <SList stories={data} onStoryClick={onStoryClick} />
+        <div className={classes.HomeSection}>
+          <h1 className={classes.Title}>Your Stories</h1>
+          <div className={classes.StorySection}>
+            <SList stories={data} onStoryClick={onStoryClick} />
+          </div>
+        </div>
+        <div className={classes.HomeSection}>
+          <h1 className={classes.Title}>Top Stories about Food!</h1>
+          <div className={classes.StorySection}>
+            <SList stories={data} onStoryClick={onStoryClick} />
+          </div>
+        </div>
+        <div className={classes.HomeSection}>
+          <h1 className={classes.Title}>
+            Top Stories about Health and Fitness!
+          </h1>
+          <div className={classes.StorySection}>
+            <SList stories={data} onStoryClick={onStoryClick} />
+          </div>
+        </div>
+        <div className={classes.HomeSection}>
+          <h1 className={classes.Title}>Top Stories about Travel!</h1>
+          <div className={classes.StorySection}>
+            <SList stories={data} onStoryClick={onStoryClick} />
+          </div>
+        </div>
+        <div className={classes.HomeSection}>
+          <h1 className={classes.Title}>Top Stories about Movies !</h1>
+          <div className={classes.StorySection}>
+            <SList stories={data} onStoryClick={onStoryClick} />
+          </div>
+        </div>
+        <div className={classes.HomeSection}>
+          <h1 className={classes.Title}>Top Stories about Education!</h1>
+          <div className={classes.StorySection}>
+            <SList stories={data} onStoryClick={onStoryClick} />
+          </div>
+        </div>
         <Modal
           closeTimeoutMS={200}
           isOpen={!!activeStory}
           onRequestClose={() => setActiveStory(undefined)}
           style={customStyles}
         >
-          {activeStory && <StoryPreview story={activeStory} />}
+          {activeStory && (
+            <StoryPreview
+              story={activeStory}
+              onClose={() => setActiveStory(undefined)}
+            />
+          )}
         </Modal>
       </main>
     </>

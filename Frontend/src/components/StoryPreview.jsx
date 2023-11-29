@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import classes from './StoryPreview.module.css'
 import SendIcon from '../assets/send-icon.svg'
 import CloseWhiteIcon from '../assets/close-white-icon.svg'
@@ -7,17 +7,28 @@ import LikeIcon from '../assets/like-icon.svg'
 import LikeFilledIcon from '../assets/like-filled-icon.svg'
 import BookmarkFilledIcon from '../assets/bookmark-filled-icon.svg'
 import SlidesProgressBar from './SlidesProgressBar'
+import { useEffect } from 'react'
 
-function StoryPreview({ story }) {
-  const imageSrc = story.slides[0].image
-  const heading = story.slides[0].heading
-  const description = story.slides[0].description
-
-  const slidesCount = story.slides.length
-
-  console.log(slidesCount)
-
+function StoryPreview({ story, onClose }) {
   const [likeClicked, setLikeClicked] = useState(false)
+  const [bookmarkClicked, setBookmarkClicked] = useState(false)
+
+  const [activeSlideIndex, setActiveSlideIndex] = useState(0)
+
+  const imageSrc = story.slides[activeSlideIndex].image
+  const heading = story.slides[activeSlideIndex].heading
+  const description = story.slides[activeSlideIndex].description
+
+  function handleSlideIndexChange(idx) {
+    setActiveSlideIndex(idx)
+  }
+
+  useEffect(() => {
+    story.slides.forEach((slide) => {
+      const img = new Image()
+      img.src = slide.image
+    })
+  }, [])
 
   return (
     <div className={classes.StoryPreviewContainer}>
@@ -27,9 +38,14 @@ function StoryPreview({ story }) {
         alt="foodStory"
       />
       <div>
-        <SlidesProgressBar />
+        <SlidesProgressBar
+          key={Date.now()}
+          slidesCount={story.slides.length}
+          slideIndex={activeSlideIndex}
+          onSlideIndexChange={handleSlideIndexChange}
+        />
         <div className={classes.StoryPreviewHeader}>
-          <button className={classes.IconButton}>
+          <button className={classes.IconButton} onClick={onClose}>
             <img src={CloseWhiteIcon} alt="" />
           </button>
           <button className={classes.IconButton}>
@@ -50,14 +66,23 @@ function StoryPreview({ story }) {
           <p>{description}</p>
         </div>
         <div className={classes.StoryPreviewActions}>
-          <button className={classes.IconButton}>
-            <img src={BookmarkIcon} alt="" />
+          <button
+            className={classes.IconButton}
+            onClick={() => setBookmarkClicked((x) => !x)}
+          >
+            <img
+              src={!bookmarkClicked ? BookmarkIcon : BookmarkFilledIcon}
+              alt="BookmarkIcon"
+            />
           </button>
           <button
             className={classes.IconButton}
             onClick={() => setLikeClicked((x) => !x)}
           >
-            <img src={!likeClicked ? LikeIcon : LikeFilledIcon} alt="" />
+            <img
+              src={!likeClicked ? LikeIcon : LikeFilledIcon}
+              alt="LikeIcon"
+            />
           </button>
         </div>
       </div>
