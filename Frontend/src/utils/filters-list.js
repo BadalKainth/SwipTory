@@ -8,7 +8,7 @@ import educationImg from '../assets/education.jpg'
 export const filtersList = [
   { id: 1, name: 'All', image: allImg },
   { id: 2, name: 'Food', image: foodImg },
-  { id: 3, name: 'Health & Fitness', image: healthImg },
+  { id: 3, name: 'Health and Fitness', image: healthImg },
   { id: 4, name: 'Travel', image: travelImg },
   { id: 5, name: 'Movies', image: moviesImg },
   { id: 6, name: 'Education', image: educationImg },
