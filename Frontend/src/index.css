@@ -6,7 +6,3 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
-progress::-webkit-progress-value {
-  transition: 5s width;
-}

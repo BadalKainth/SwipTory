@@ -1,32 +1,44 @@
-import React from 'react'
 import classes from './StoryCard.module.css'
-import { useApp } from '../hooks/app'
+import EditIcon from '../assets/edit-icon.svg'
+import { useEventDispatch } from '../hooks/event'
 import { useAuth } from '../hooks/auth'
 
 const StoryCard = ({ story }) => {
-  const { openLoginModal } = useApp()
   const { user } = useAuth()
 
-  const { id, slides } = story
+  const { id, slides, userId } = story
 
   const { heading, description, image } = slides[0]
 
+  const dispatchEvent = useEventDispatch()
+
   return (
-    <div
-      key={id}
-      className={classes.card}
-      onClick={() => {
-        if (!user) {
-          openLoginModal()
-        }
-      }}
-    >
+    <div key={id} className={classes.card}>
       <div className={classes.info}>
         <span className={classes.cardTitle}>{heading}</span>
         <span className={classes.cardDesc}>{description}</span>
       </div>
 
       <img className={classes.cardImage} src={image} alt="" />
+      {user?.userId === userId && (
+        <button
+          className={classes.EditButton}
+          onClick={(e) => {
+            e.stopPropagation()
+            dispatchEvent('editStory', story)
+          }}
+        >
+          <img
+            src={EditIcon}
+            style={{
+              height: '20px',
+              marginTop: '-4px',
+            }}
+            alt=""
+          />
+          Edit
+        </button>
+      )}
     </div>
   )
 }

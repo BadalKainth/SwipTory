@@ -5,7 +5,9 @@
   flex-direction: column;
   justify-content: end;
   border-radius: 10px;
+  position: relative;
   background: linear-gradient(0deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4));
+  cursor: pointer;
 }
 
 .info {
@@ -33,4 +35,24 @@
   width: 257px;
   height: 459px;
   border-radius: 10px;
+}
+
+.EditButton {
+  display: flex;
+  align-items: center;
+  border: none;
+  outline: none;
+  color: black;
+  border-radius: 12px;
+  padding: 0.4rem 2rem;
+  position: absolute;
+  left: 50%;
+  bottom: 10px;
+  cursor: pointer;
+  transform: translate(-50%, 0);
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.EditButton:hover {
+  background: rgb(201, 198, 198);
 }

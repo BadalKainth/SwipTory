@@ -13,3 +13,7 @@ export const filtersList = [
   { id: 5, name: 'Movies', image: moviesImg },
   { id: 6, name: 'Education', image: educationImg },
 ]
+
+export const categories = filtersList
+  .map((item) => item.name)
+  .filter((item) => item !== 'All')

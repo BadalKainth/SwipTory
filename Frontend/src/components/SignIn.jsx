@@ -3,6 +3,7 @@ import classes from './SignIn.module.css'
 import CloseIcon from '../assets/close-icon.svg'
 import { login } from '../api/auth'
 import { useAuth } from '../hooks/auth'
+import { parseJwt } from '../utils/jwt'
 
 function SignIn({ onClose }) {
   const { setUser, user } = useAuth()
@@ -18,7 +19,11 @@ function SignIn({ onClose }) {
 
     try {
       const response = await login(username, password)
-      setUser(response)
+      const payload = parseJwt(response.accessToken)
+      setUser({
+        ...response,
+        ...payload,
+      })
       localStorage.setItem('accessToken', response.accessToken)
       onClose()
     } catch (error) {

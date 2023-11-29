@@ -3,10 +3,13 @@ import ReactDOM from 'react-dom/client'
 import Modal from 'react-modal'
 import App from './App.jsx'
 import axios from 'axios'
-import './index.css'
+import { ToastContainer } from 'react-toastify'
 import { BrowserRouter } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
 import { AppProvider } from './contexts/AppContext'
+import 'react-toastify/dist/ReactToastify.css'
+import './index.css'
+import { EventEmitter } from './contexts/EventEmitter.jsx'
 
 axios.defaults.baseURL = 'http://localhost:3000'
 
@@ -17,7 +20,10 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <BrowserRouter>
       <AuthProvider>
         <AppProvider>
-          <App />
+          <ToastContainer />
+          <EventEmitter>
+            <App />
+          </EventEmitter>
         </AppProvider>
       </AuthProvider>
     </BrowserRouter>

@@ -1,13 +1,19 @@
 import NavBar from './NavBar'
 import FList from './FilterList'
-import { filtersList } from '../utils/filters-list'
-import SList from './StoryList'
+import { filtersList, categories } from '../utils/filters-list'
 import useSWR from 'swr'
 import { getStories } from '../api/stories'
 import StoryPreview from './StoryPreview'
 import { useCallback, useState } from 'react'
 import Modal from 'react-modal'
-import classes from './Home.module.css'
+import StorySection from './StorySection'
+import {
+  likeStory,
+  unlikeStory,
+  bookmarkStory,
+  unbookmarkStory,
+} from '../api/stories'
+import { useAuth } from '../hooks/auth'
 
 const customStyles = {
   overlay: {
@@ -23,79 +29,169 @@ const customStyles = {
     padding: 0,
     border: 'none',
     borderRadius: '0px',
+    backgroundColor: 'transparent',
+    outline: 'none',
   },
 }
 
 function Home() {
-  const { data, error, isLoading } = useSWR('/stories', getStories)
+  const { user } = useAuth()
+
+  const { isLoading, mutate } = useSWR(
+    `/stories/${user?.username}`,
+    getStories,
+    {
+      onSuccess: (data) => {
+        const userId = user?.userId
+        const sections = categories.map((c) => ({ category: c, stories: [] }))
+
+        const yourStories = []
+
+        data.forEach((story) => {
+          if (userId) {
+            if (story.userId === userId) {
+              yourStories.push(story)
+            }
+          }
+
+          const section = sections.find((s) => s.category === story.category)
+          section && section.stories.push(story)
+        })
+
+        setSections(sections)
+        setYourStories(yourStories)
+      },
+    }
+  )
 
   const [activeStory, setActiveStory] = useState(undefined)
 
+  const [activeFilter, setActiveFilter] = useState('All')
+
+  const onFilterClick = (filter) => {
+    setActiveFilter(filter)
+  }
+
   const onStoryClick = useCallback((story) => {
+    window.history.pushState('', '', `/story/${story._id}`)
     setActiveStory(story)
   }, [])
 
-  if (isLoading) return <>Loading.....</>
+  const [sections, setSections] = useState([])
 
-  if (error) return <>Error occured</>
+  const [yourStories, setYourStories] = useState([])
+
+  async function handleLikeClick() {
+    const storyId = activeStory._id
+    const currentLike = !!activeStory.isLiked
+    try {
+      setActiveStory((prev) => ({
+        ...prev,
+        isLiked: !currentLike,
+      }))
+
+      currentLike ? await unlikeStory(storyId) : await likeStory(storyId)
+    } catch (error) {
+      setActiveStory((prev) => ({
+        ...prev,
+        isLiked: currentLike,
+      }))
+    }
+  }
+
+  async function handleBookmarkClick() {
+    const storyId = activeStory._id
+    const currentBookmark = !!activeStory.isBookmarked
+    try {
+      setActiveStory((prev) => ({
+        ...prev,
+        isBookmarked: !currentBookmark,
+      }))
+
+      currentBookmark
+        ? await unbookmarkStory(storyId)
+        : await bookmarkStory(storyId)
+    } catch (error) {
+      setActiveStory((prev) => ({
+        ...prev,
+        isBookmarked: currentBookmark,
+      }))
+    }
+  }
+
+  function handleClose() {
+    mutate()
+    setActiveStory(undefined)
+    window.history.pushState('', '', `/`)
+  }
 
   return (
     <>
-      <NavBar></NavBar>
+      <NavBar onRefresh={mutate}></NavBar>
       <main
         style={{
           padding: '2rem 3rem',
         }}
       >
-        <FList filters={filtersList} />
-        <div className={classes.HomeSection}>
-          <h1 className={classes.Title}>Your Stories</h1>
-          <div className={classes.StorySection}>
-            <SList stories={data} onStoryClick={onStoryClick} />
+        <FList
+          filters={filtersList}
+          onFilterClick={onFilterClick}
+          currentFilter={activeFilter}
+        />
+        {isLoading ? (
+          <></>
+        ) : (
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '1rem',
+            }}
+          >
+            {activeFilter === 'All' ? (
+              <>
+                {user && (
+                  <StorySection
+                    key={'yourStories'}
+                    title={`Your Stories`}
+                    data={yourStories}
+                    onStoryClick={onStoryClick}
+                  />
+                )}
+                {sections.map((section) => (
+                  <StorySection
+                    key={section.category}
+                    title={`Top Stories about ${section.category}`}
+                    data={section.stories}
+                    onStoryClick={onStoryClick}
+                  />
+                ))}
+              </>
+            ) : (
+              <StorySection
+                key={activeFilter}
+                title={`Top Stories about ${activeFilter}`}
+                data={
+                  sections.find((s) => s.category === activeFilter)?.stories ||
+                  []
+                }
+                onStoryClick={onStoryClick}
+              />
+            )}
           </div>
-        </div>
-        <div className={classes.HomeSection}>
-          <h1 className={classes.Title}>Top Stories about Food!</h1>
-          <div className={classes.StorySection}>
-            <SList stories={data} onStoryClick={onStoryClick} />
-          </div>
-        </div>
-        <div className={classes.HomeSection}>
-          <h1 className={classes.Title}>
-            Top Stories about Health and Fitness!
-          </h1>
-          <div className={classes.StorySection}>
-            <SList stories={data} onStoryClick={onStoryClick} />
-          </div>
-        </div>
-        <div className={classes.HomeSection}>
-          <h1 className={classes.Title}>Top Stories about Travel!</h1>
-          <div className={classes.StorySection}>
-            <SList stories={data} onStoryClick={onStoryClick} />
-          </div>
-        </div>
-        <div className={classes.HomeSection}>
-          <h1 className={classes.Title}>Top Stories about Movies !</h1>
-          <div className={classes.StorySection}>
-            <SList stories={data} onStoryClick={onStoryClick} />
-          </div>
-        </div>
-        <div className={classes.HomeSection}>
-          <h1 className={classes.Title}>Top Stories about Education!</h1>
-          <div className={classes.StorySection}>
-            <SList stories={data} onStoryClick={onStoryClick} />
-          </div>
-        </div>
+        )}
         <Modal
           closeTimeoutMS={200}
           isOpen={!!activeStory}
-          onRequestClose={() => setActiveStory(undefined)}
+          onRequestClose={handleClose}
           style={customStyles}
         >
           {activeStory && (
             <StoryPreview
               story={activeStory}
-              onClose={() => setActiveStory(undefined)}
+              onClose={handleClose}
+              handleLikeClick={handleLikeClick}
+              handleBookmarkClick={handleBookmarkClick}
             />
           )}
         </Modal>

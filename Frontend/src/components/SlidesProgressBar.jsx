@@ -13,29 +13,29 @@ const ProgessBar = forwardRef(function ProgessBar(_, ref) {
 export default function SlidesProgressBar({
   slidesCount = 3,
   slideIndex = 0,
-  onSlideIndexChange,
+  onProgressComplete,
 }) {
   // const [slidesProgress, setSlidesProgress] = useState(0)
 
   const eleRef = useRef([])
 
   useEffect(() => {
-    async function updateProgress() {
-      setTimeout(() => {
-        if (slideIndex < slidesCount - 1) {
-          onSlideIndexChange(slideIndex + 1)
-        }
-      }, 4700)
+    const currentEle = eleRef.current[slideIndex]
 
+    async function updateProgress() {
       for (let i = 0; i < slideIndex; i++) {
         eleRef.current[i].style.animationDuration = '0s'
         eleRef.current[i].style.animationPlayState = 'running'
       }
 
-      eleRef.current[slideIndex].style.animationPlayState = 'running'
+      currentEle.style.animationPlayState = 'running'
     }
     updateProgress()
-  }, [slidesCount, onSlideIndexChange, slideIndex])
+    currentEle.addEventListener('animationend', onProgressComplete, false)
+    return () => {
+      currentEle.removeEventListener('animationend', onProgressComplete, false)
+    }
+  }, [slidesCount, slideIndex, onProgressComplete])
 
   return (
     <div className="container">

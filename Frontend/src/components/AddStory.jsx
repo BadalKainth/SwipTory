@@ -1,26 +1,33 @@
 import { useState } from 'react'
 import classes from './AddStory.module.css'
 import CloseIcon from '../assets/close-icon.svg'
-import { groupBy } from '../utils/groupBy'
-import { addStory } from '../api/stories'
+import { addStory, editStory } from '../api/stories'
+import { toast } from 'react-toastify'
+import { mutate } from 'swr'
+import PropTypes from 'prop-types'
 
 const createInitialSlide = () => ({
   heading: '',
   description: '',
   image: '',
-  category: '',
 })
 
-function AddStory({ onClose }) {
+function AddStory({ onClose, initialStory }) {
   const [activeSlideIndex, setActiveSlideIndex] = useState(0)
 
-  const [slides, setSlides] = useState(
-    Array(3)
-      .fill(0)
-      .map(() => createInitialSlide())
+  const [selectedCategory, setSelectedCategory] = useState(
+    initialStory ? initialStory.category : 'Food'
   )
 
-  const { heading, description, image, category } = slides[activeSlideIndex]
+  const [slides, setSlides] = useState(
+    initialStory
+      ? initialStory.slides
+      : Array(3)
+          .fill(0)
+          .map(() => createInitialSlide())
+  )
+
+  const { heading, description, image } = slides[activeSlideIndex]
 
   function addSlide() {
     setSlides((slides) => [...slides, createInitialSlide()])
@@ -51,18 +58,46 @@ function AddStory({ onClose }) {
     setSlides(newSlides)
   }
 
+  function checkValid() {
+    for (const slide of slides) {
+      for (const value of Object.values(slide)) {
+        if (!value) return false
+      }
+    }
+    return true
+  }
+
   async function handleAddStory() {
-    const storiesMap = groupBy(slides, (slide) => slide.category)
-    const stories = Array.from(storiesMap.entries()).map(
-      ([category, slides]) => ({
-        category,
-        slides,
-      })
-    )
     try {
-      const promises = stories.map((story) => addStory(story))
-      await Promise.all(promises)
+      const isValid = checkValid()
+
+      if (!isValid) {
+        return toast.error('Pleae fill all the fields', {
+          position: 'bottom-center',
+          autoClose: 1000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: false,
+          progress: undefined,
+          theme: 'dark',
+        })
+      }
+
+      if (initialStory) {
+        await editStory(initialStory._id, {
+          category: selectedCategory,
+          slides,
+        })
+      } else {
+        await addStory({
+          category: selectedCategory,
+          slides,
+        })
+      }
+
       onClose()
+      mutate('/stories')
     } catch (error) {
       alert(error.message)
     }
@@ -159,34 +194,55 @@ function AddStory({ onClose }) {
             <select
               id="category"
               className={classes.FormInput}
-              value={category}
+              value={selectedCategory}
               name="category"
-              onChange={handleChange}
+              onChange={(e) => setSelectedCategory(e.target.value)}
               placeholder="Select category"
             >
               <option value="Food">Food</option>
-              <option value="health and fitness">Health and fitness</option>
-              <option value="travel">Travel</option>
-              <option value="movies">Movies</option>
-              <option value="education">Education</option>
+              <option value="Health and Fitness">Health and fitness</option>
+              <option value="Travel">Travel</option>
+              <option value="Movies">Movies</option>
+              <option value="Education">Education</option>
             </select>
           </div>
           <div className={classes.AddStoryButtonActions}>
             <div className={classes.AddStoryButtonGroup}>
-              <button className={classes.PreviousSlideButton}>Previous</button>
-              <button className={classes.NextSlideButton}>Next</button>
+              <button
+                className={classes.PreviousSlideButton}
+                onClick={() => {
+                  if (activeSlideIndex > 0)
+                    setActiveSlideIndex((idx) => idx - 1)
+                }}
+              >
+                Previous
+              </button>
+              <button
+                className={classes.NextSlideButton}
+                onClick={() => {
+                  if (activeSlideIndex < slides.length - 1)
+                    setActiveSlideIndex((idx) => idx + 1)
+                }}
+              >
+                Next
+              </button>
             </div>
             <button
               className={classes.PostStoryButton}
               onClick={handleAddStory}
             >
-              Post
+              {initialStory ? 'Edit' : 'Post'}
             </button>
           </div>
         </div>
       </div>
     </div>
   )
+}
+
+AddStory.propTypes = {
+  onClose: PropTypes.func.isRequired,
+  initialStory: PropTypes.object,
 }
 
 export default AddStory

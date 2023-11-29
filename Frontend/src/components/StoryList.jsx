@@ -1,8 +1,9 @@
-import React from 'react'
 import StoryCard from './StoryCard'
 import classes from './StoryList.module.css'
+// import { useHorizontalScroll } from '../hooks/scroll'
 
 const StoryList = ({ stories, onStoryClick }) => {
+  // const scrollRef = useHorizontalScroll()
   return (
     <div className={classes.CardContainer}>
       {stories.map((story) => {

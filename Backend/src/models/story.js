@@ -21,6 +21,12 @@ const storySchema = new mongoose.Schema(
     userId: {
       type: mongoose.Schema.ObjectId,
     },
+    isLiked: {
+      type: Boolean,
+    },
+    isBookmarked: {
+      type: Boolean,
+    },
     slides: [slideSchema],
   },
   {
