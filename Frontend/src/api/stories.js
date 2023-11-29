@@ -83,6 +83,15 @@ export async function getStoriesByCategory(category) {
   }
 }
 
+export async function getStoryLikesCount(id) {
+  try {
+    const response = await axios.get(`/story/${id}/likeCount`)
+    return response.data
+  } catch (error) {
+    throw new Error('Failed to like story')
+  }
+}
+
 export async function likeStory(id) {
   try {
     const response = await axios.post(`/story/${id}/like`, null, {

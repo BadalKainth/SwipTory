@@ -13,6 +13,7 @@ import StoryPreview from '../components/StoryPreview'
 import StorySection from '../components/StorySection'
 import { useAuth } from '../hooks/auth'
 import { useNavigate } from 'react-router-dom'
+import { useEventDispatch } from '../hooks/event'
 
 const customStyles = {
   overlay: {
@@ -46,6 +47,8 @@ function Bookmarks() {
     setActiveStory(story)
   }, [])
 
+  const dispatchEvent = useEventDispatch()
+
   async function handleLikeClick() {
     const storyId = activeStory._id
     const currentLike = !!activeStory.isLiked
@@ -56,6 +59,7 @@ function Bookmarks() {
       }))
 
       currentLike ? await unlikeStory(storyId) : await likeStory(storyId)
+      dispatchEvent('refreshLike', {})
     } catch (error) {
       setActiveStory((prev) => ({
         ...prev,

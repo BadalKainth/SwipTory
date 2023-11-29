@@ -13,6 +13,9 @@ import { useApp } from '../hooks/app'
 import { useAuth } from '../hooks/auth'
 import { useEffect } from 'react'
 import { toast } from 'react-toastify'
+import useSwr from 'swr'
+import { getStoryLikesCount } from '../api/stories'
+import { useEvent } from '../hooks/event'
 
 function StoryPreview({
   story,
@@ -22,6 +25,20 @@ function StoryPreview({
 }) {
   const { user } = useAuth()
   const { openLoginModal } = useApp()
+
+  const { mutate } = useSwr(
+    `/story/${story._id}/likeCount`,
+    () => getStoryLikesCount(story._id),
+    {
+      onSuccess: (data) => {
+        setLikeCount(data.likeCount)
+      },
+    }
+  )
+
+  useEvent('refreshLike', () => mutate())
+
+  const [likeCount, setLikeCount] = useState(undefined)
 
   const [activeSlideIndex, setActiveSlideIndex] = useState(0)
 
@@ -139,23 +156,38 @@ function StoryPreview({
                 alt="BookmarkIcon"
               />
             </button>
-            <button
-              className={classes.IconButton}
-              onClick={() => {
-                if (!user) {
-                  onClose()
-                  openLoginModal()
-                } else {
-                  handleLikeClick()
-                }
+            <div
+              style={{
+                display: 'flex',
               }}
             >
-              <img
-                className={classes.Icon}
-                src={!isLiked ? LikeIcon : LikeFilledIcon}
-                alt="LikeIcon"
-              />
-            </button>
+              <button
+                className={classes.IconButton}
+                onClick={() => {
+                  if (!user) {
+                    onClose()
+                    openLoginModal()
+                  } else {
+                    handleLikeClick()
+                  }
+                }}
+              >
+                <img
+                  className={classes.Icon}
+                  src={!isLiked ? LikeIcon : LikeFilledIcon}
+                  alt="LikeIcon"
+                />
+              </button>
+              <p
+                style={{
+                  color: 'white',
+                  fontSize: '18px',
+                  fontWeight: 'bold',
+                }}
+              >
+                {Number.isInteger(likeCount) ? likeCount : '...'}
+              </p>
+            </div>
           </div>
         </div>
       </div>

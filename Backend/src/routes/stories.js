@@ -236,6 +236,21 @@ router.get("/story/category/:category", leanAuthroizer, async (req, res) => {
   return res.send(stories);
 });
 
+router.get("/story/:id/likeCount", async (req, res) => {
+  const id = req.params.id;
+
+  try {
+    const likeCount = await Like.find({
+      storyId: toObjectId(id),
+    }).countDocuments();
+    return res.send({
+      likeCount,
+    });
+  } catch (error) {
+    res.status(400).send("Failed to fetch like count");
+  }
+});
+
 router.post("/story/:id/like", authorizer, async (req, res) => {
   const id = req.params.id;
 

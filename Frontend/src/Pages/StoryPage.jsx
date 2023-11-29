@@ -11,6 +11,7 @@ import {
 import NavBar from '../components/NavBar'
 import StoryPreview from '../components/StoryPreview'
 import { useNavigate, useParams } from 'react-router-dom'
+import { useEventDispatch } from '../hooks/event'
 
 const customStyles = {
   overlay: {
@@ -35,6 +36,8 @@ function Story({ initialStory }) {
   const navigate = useNavigate()
   const [story, setStory] = useState(initialStory)
 
+  const dispatchEvent = useEventDispatch()
+
   async function handleLikeClick() {
     const storyId = story._id
     const currentLike = !!story.isLiked
@@ -45,6 +48,7 @@ function Story({ initialStory }) {
       }))
 
       currentLike ? await unlikeStory(storyId) : await likeStory(storyId)
+      dispatchEvent('refreshLike', {})
     } catch (error) {
       setStory((prev) => ({
         ...prev,

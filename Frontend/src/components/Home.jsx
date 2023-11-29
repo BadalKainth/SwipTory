@@ -14,6 +14,7 @@ import {
   unbookmarkStory,
 } from '../api/stories'
 import { useAuth } from '../hooks/auth'
+import { useEventDispatch } from '../hooks/event'
 
 const customStyles = {
   overlay: {
@@ -81,6 +82,8 @@ function Home() {
 
   const [yourStories, setYourStories] = useState([])
 
+  const dispatchEvent = useEventDispatch()
+
   async function handleLikeClick() {
     const storyId = activeStory._id
     const currentLike = !!activeStory.isLiked
@@ -91,6 +94,7 @@ function Home() {
       }))
 
       currentLike ? await unlikeStory(storyId) : await likeStory(storyId)
+      dispatchEvent('refreshLike', {})
     } catch (error) {
       setActiveStory((prev) => ({
         ...prev,
