@@ -106,9 +106,7 @@ function Story({ initialStory }) {
 function StoryPage() {
   const { id } = useParams()
 
-  const { data, isLoading, error } = useSWR(`/story/:${id}`, () =>
-    getStory(id)
-  )(data)
+  const { data, isLoading, error } = useSWR(`/story/:${id}`, () => getStory(id))
 
   if (isLoading) return <>Loading...</>
 
