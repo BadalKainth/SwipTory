@@ -11,7 +11,7 @@ import 'react-toastify/dist/ReactToastify.css'
 import './index.css'
 import { EventEmitter } from './contexts/EventEmitter.jsx'
 
-axios.defaults.baseURL = 'http://localhost:3000'
+axios.defaults.baseURL = import.meta.env.API_URL
 
 Modal.setAppElement('#root')
 
