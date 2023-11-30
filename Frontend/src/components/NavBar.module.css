@@ -15,8 +15,7 @@
 
 .buttonGroup {
   display: flex;
-  gap: 40px;
-  margin-right: 2rem;
+  gap: 10px;
   align-items: center;
 }
 
@@ -32,14 +31,18 @@
   background-color: #ff7373;
   font-size: 16px;
   font-weight: 700;
-  width: 160px;
 }
 
 .button.signinBtn {
   background-color: #73abff;
   font-size: 16px;
   font-weight: 700;
-  width: 160px;
+}
+
+@media (max-width: 480px) {
+  .button {
+    padding: 1rem;
+  }
 }
 
 .wrapperSection {
@@ -99,12 +102,10 @@
   border: none;
   cursor: pointer;
   outline: none;
-  padding: 1.3rem;
   font-size: 18px;
   font-weight: 700;
   color: black;
   background-color: #73abff;
-  width: 160px;
 }
 
 .avatarIcon {
@@ -126,9 +127,9 @@
 
 .buttonPopup {
   position: absolute;
-  bottom: -200px;
+  bottom: -100;
   right: 0;
-  height: 180px;
+  /* height: 300px; */
   width: 300px;
   background: white;
   border-radius: 8px;
@@ -138,7 +139,8 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 0rem 2rem;
+  gap: 1rem;
+  padding: 2rem;
 }
 
 .SignoutButton {
@@ -152,4 +154,16 @@
   color: black;
   background-color: #73abff;
   width: fit-content;
+}
+
+@media (max-width: 480px) {
+  .isDekstop {
+    display: none;
+  }
+}
+
+@media (min-width: 480px) {
+  .isMobile {
+    display: none;
+  }
 }
